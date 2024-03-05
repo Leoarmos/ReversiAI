@@ -1,0 +1,39 @@
+@import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
+
+/*
+<uniquifier>: Use a unique and descriptive class name
+<weight>: Use a value from 300 to 900
+
+.rubik-<uniquifier> {
+  font-family: "Rubik", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: <weight>;
+  font-style: normal;
+}
+*/
+
+body {
+    background-color: #31D322;
+    font-family: "Rubik", sans-serif;
+}
+
+div#center-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+input[type=button] {
+    background-color: red;
+    color: blue;
+    border: 2px solid pink;
+    box-sizing: content-box;
+    transition: background-color 0.15s, border-color 0.15s;
+    padding: 20px;
+}
+
+input[type=button]:hover {
+    background-color: pink;
+}
