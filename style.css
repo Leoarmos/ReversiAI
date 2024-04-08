@@ -13,7 +13,8 @@
 */
 
 body {
-    background-color: #31D322;
+    background-color: #004b23;
+    color: white;
     font-family: "Rubik", sans-serif;
 }
 
@@ -26,14 +27,44 @@ div#center-container {
 }
 
 input[type=button] {
-    background-color: red;
-    color: blue;
-    border: 2px solid pink;
+    background-color: #008000;
+    color: white;
+    border: 2px solid #006400;
     box-sizing: content-box;
     transition: background-color 0.15s, border-color 0.15s;
-    padding: 20px;
+    padding: 1.5em;
 }
 
 input[type=button]:hover {
-    background-color: pink;
+    background-color: #006400;
+    cursor: pointer;
+}
+
+input[type=button].board-size {
+    font-size: 110%;
+}
+
+div#board-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+table#board{
+    border: 3px solid black;
+    border-collapse: collapse;
+    background-color: #38b000;
+    margin: 3px;
+}
+
+table#board td {
+    border: 2px solid black;
+    width: 50px;
+    height: 50px;
+}
+
+table#board td.possible-move {
+    cursor: pointer;
 }
