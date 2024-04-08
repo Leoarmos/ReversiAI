@@ -17,12 +17,14 @@ function checkColumn(i, j, dir) {
                 opponentPawns++;
             } else if (gameBoard[y][j] == turn && opponentPawns > 0) {
                 gameBoard[i][j] = "p";
-                break;
+                return opponentPawns;
             } else {
-                break;
+                return 0;
             }
         }
     }
+    
+    return 0;
 }
 
 function checkRow(i, j, dir) {
@@ -35,12 +37,14 @@ function checkRow(i, j, dir) {
                 opponentPawns++;
             } else if (gameBoard[i][x] == turn && opponentPawns > 0) {
                 gameBoard[i][j] = "p";
-                break;
+                return opponentPawns;
             } else {
-                break;
+                return 0;
             }
         }
     }
+
+    return 0;
 }
 
 function updatePossibleMoves() {
@@ -114,17 +118,35 @@ function newGame(n) {
     updateGameboard();
 }
 
-function turnPawn() {
-
-}
-
 function addPawn(i, j) {
     for(let i = 0; i < dimension; i++) {
         for(let j = 0; j < dimension; j++) {
             if (gameBoard[i][j] == "p") gameBoard[i][j] = "0";
         }
     }
-    gameBoard[i][j] = turn;
+
+    let positive_y = checkColumn(i, j, 1);
+    let negative_y = checkColumn(i, j, -1);
+    let positive_x = checkRow(i, j, 1);
+    let negative_x = checkRow(i, j, -1);
+    //console.log(positive_y, negative_y, positive_x, negative_x);
+
+    for(let y = 0; y <= positive_y; y++) gameBoard[i + y][j] = turn;
+    for(let y = 0; y <= negative_y; y++) gameBoard[i - y][j] = turn;
+    for(let x = 0; x <= positive_x; x++) gameBoard[i][j + x] = turn;
+    for(let x = 0; x <= negative_x; x++) gameBoard[i][j - x] = turn;
+    //gameBoard[i][j] = turn;
     turn = turn == "b" ? "w" :"b";
     updateGameboard();
+
+    let count = 0;
+    for(let i = 0; i < dimension; i++) {
+        for(let j = 0; j < dimension; j++) {
+            if(gameBoard[i][j] == "p") count++;
+        }
+    }
+    if (count == 0) {
+        turn = turn == "b" ? "w" :"b";
+        updateGameboard();
+    }
 }
