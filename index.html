@@ -6,20 +6,100 @@
         <meta name="description" content="Intellingent player for the game Reversi">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="./style.css">
+        <script>
+            // Button variables
+            let sizeSelected = false;
+            let gametypeSelected = false;
+
+            function updateStartGameButton() {
+                if (sizeSelected && gametypeSelected) {
+                    startGameButton.disabled = false;
+                } else {
+                    startGameButton.disabled = true;
+                }
+            }
+        </script>
     </head>
-    <body onload="reset()">
+    <body>
         <script src="./game.js" async defer></script>
         <div id="center-container">
             <div id="title">
-                <h1>Reversi AI</h1>
+                <a href="./index.html"><h1>Reversi AI</h1></a>
             </div>
-            <div id="buttons">
-                <input type="button" value="8x8" class="board-size" onclick="newGame(8)">
-                <input type="button" value="10x10" class="board-size" onclick="newGame(10)">
-                <input type="button" value="12x12" class="board-size" onclick="newGame(12)">
-                <input type="text-area" id="turn-tracker" disabled>
+            <div id="size-buttons" class="padding">
+                <h3>Choose the dimension of the grid</h3>
+                <input type="button" value="8x8" data-value="8" class="board-size">
+                <input type="button" value="10x10" data-value="10" class="board-size">
+                <input type="button" value="12x12" data-value="12" class="board-size">
+                <script>
+                    // Make it so only one size button is active at a time
+                    // Get all size buttons
+                    const sizeButtons = document.querySelectorAll('input[type="button"].board-size');
+
+                    // Add click event listeners to each button
+                    sizeButtons.forEach(button => {
+                        button.addEventListener('click', () => {
+                            // Remove 'active' class from all buttons
+                            sizeButtons.forEach(btn => btn.classList.remove('active'));
+
+                            // Add 'active' class to the clicked button
+                            button.classList.add('active');
+
+                            // Update the value of the dimension
+                            dimension = button.getAttribute('data-value');
+
+                            // Update the flag to enable the start game button
+                            sizeSelected = true;
+                            updateStartGameButton();
+                            console.log(dimension)
+                        });
+                    });
+                </script>
             </div>
-            <div id="board-container"></div>
+            <div id="gameplay-buttons" class="padding">
+                <h3>Choose how you want to play</h3>
+                <input type="button" value="Player vs Player" data-value="0" class="game-type">
+                <input type="button" disabled value="Player vs AI" data-value="1" class="game-type">
+                <input type="button" disabled value="AI vs AI" data-value="2" class="game-type">
+                <script>
+                    // Make it so only one game type button is activa at a time
+                    // Get all size buttons
+                    const typeButtons = document.querySelectorAll('input[type="button"].game-type');
+
+                    // Add click event listeners to each button
+                    typeButtons.forEach(button => {
+                        button.addEventListener('click', () => {
+                            // Remove 'active' class to the clicked button
+                            typeButtons.forEach(btn => btn.classList.remove('active'));
+
+                            // Add 'active' class to the clicked button
+                            button.classList.add('active');
+
+                            // Update the game type
+                            gameType = button.getAttribute('data-value');
+
+                            // Update the flag to enable the start game button
+                            gametypeSelected = true;
+                            updateStartGameButton();
+                            console.log(gametypeSelected)
+                        });
+                    });
+                </script>
+            </div>
+            <div class="padding">
+                <input type="button" id="start-game-button" disabled value="Start Game!">
+                <script>
+                    // Start game event
+                    // Get the button element
+                    const startGameButton = document.getElementById('start-game-button');
+                        
+                    // Add click event listener to the button
+                    startGameButton.addEventListener('click', () => {
+                        // Redirect the user to the specified URL when the button is clicked
+                        window.location.href = './game.html?dimension=' + dimension + '&gameType=' + gameType;
+                    });
+                </script>
+            </div>
         </div>
     </body>
 </html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>ReversiAI</title>
+        <meta name="description" content="Intellingent player for the game Reversi">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="./style.css">
+        <script>
+            const urlParams = new URLSearchParams(window.location.search);
+            const dimension = urlParams.get('dimension');
+            const gameType = urlParams.get('gameType');
+        </script>
+    </head>
+    <body onload="newGame()">
+        <script src="./game.js" defer></script>
+        <div id="center-container">
+            <div id="title">
+                <a href="./index.html"><h1>Reversi AI</h1></a>
+            </div>
+            <div id="buttons">
+                <input type="button" id="new-game-button" class="smaller-button" value="New Game">
+                <script>
+                    // New game event
+                    // Get the button element
+                    const newGameButton = document.getElementById('new-game-button');
+                        
+                    // Add click event listener to the button
+                    newGameButton.addEventListener('click', () => {
+                        // Redirect the user to the specified URL when the button is clicked
+                        window.location.href = './index.html';
+                    });
+                </script>
+            </div>
+            <div>
+                <p id="message"></p>
+            </div>
+            <div id="board-container"></div>
+        </div>
+    </body>
+</html>

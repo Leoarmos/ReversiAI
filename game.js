@@ -1,10 +1,7 @@
-let dimension;
+// Global game variables
 let turn;
 let gameBoard;
 
-function reset() {
-    document.getElementById("turn-tracker").value = "";
-}
 
 // Check the columns for possible moves
 // dir = 1: ↓
@@ -168,7 +165,7 @@ function updateGameboard() {
 
     board += "</table>";
     document.getElementById("board-container").innerHTML = board;
-    document.getElementById("turn-tracker").value = "It's " + (turn == "b" ? "Black" : "White") +  "'s turn";
+    document.getElementById("message").innerHTML = "It's " + (turn == "b" ? "Black" : "White") +  "'s turn";
 }
 
 function showWinner() {
@@ -182,21 +179,21 @@ function showWinner() {
         }
     }
 
-    alert("The winner is " + countB > countW ? "Black" : "White");
+    document.getElementById("message").innerHTML = "The winner is " + (countB > countW ? "Black" : "White");
 }
 
-function newGame(n) {
+function newGame() {
+    console.log(dimension)
     gameBoard = [];
     turn = "b";
 
-    dimension = n;
-    for(let i = 0; i < n; i++) {
+    for(let i = 0; i < dimension; i++) {
         let row = [];
-        for(let j = 0; j < n; j++) {
-            if ((i == n/2 - 1 && j == n/2 - 1) || (i == n/2 && j == n/2)) {
+        for(let j = 0; j < dimension; j++) {
+            if ((i == dimension/2 - 1 && j == dimension/2 - 1) || (i == dimension/2 && j == dimension/2)) {
                 // initial black cells
                 row.push("b");
-            }  else if ((i == n/2 - 1 && j == n/2) || (i == n/2 && j == n/2 - 1)) {
+            }  else if ((i == dimension/2 - 1 && j == dimension/2) || (i == dimension/2 && j == dimension/2 - 1)) {
                 // initial white cells
                 row.push("w");
             } else {

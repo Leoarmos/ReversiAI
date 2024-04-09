@@ -12,10 +12,20 @@
 }
 */
 
+.padding {
+    padding: 20px;
+}
+
 body {
     background-color: #004b23;
     color: white;
     font-family: "Rubik", sans-serif;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
 }
 
 div#center-container {
@@ -33,15 +43,25 @@ input[type=button] {
     box-sizing: content-box;
     transition: background-color 0.15s, border-color 0.15s;
     padding: 1.5em;
+    font-size: 110%;
 }
 
-input[type=button]:hover {
+input[type=button]:hover:not([disabled]) {
     background-color: #006400;
     cursor: pointer;
 }
 
-input[type=button].board-size {
-    font-size: 110%;
+input[type=button]:disabled {
+    color: #006400;
+}
+
+input[type=button]:active:not([disabled]), input[type=button].active:not([disabled]) {
+    background-color: #006400;
+}
+
+input[type=button].smaller-button {
+    font-size: 100%;
+    padding: 0.9em;
 }
 
 div#board-container {
@@ -67,4 +87,8 @@ table#board td {
 
 table#board td.possible-move {
     cursor: pointer;
+}
+
+h3 {
+    text-align: center;
 }
