@@ -51,7 +51,6 @@
                             // Update the flag to enable the start game button
                             sizeSelected = true;
                             updateStartGameButton();
-                            console.log(dimension)
                         });
                     });
                 </script>
@@ -59,10 +58,10 @@
             <div id="gameplay-buttons" class="padding">
                 <h3>Choose how you want to play</h3>
                 <input type="button" value="Player vs Player" data-value="0" class="game-type">
-                <input type="button" disabled value="Player vs AI" data-value="1" class="game-type">
-                <input type="button" disabled value="AI vs AI" data-value="2" class="game-type">
+                <input type="button" value="Player vs AI" data-value="1" class="game-type">
+                <input type="button" value="AI vs AI" data-value="2" class="game-type">
                 <script>
-                    // Make it so only one game type button is activa at a time
+                    // Make it so only one game type button is active at a time
                     // Get all size buttons
                     const typeButtons = document.querySelectorAll('input[type="button"].game-type');
 

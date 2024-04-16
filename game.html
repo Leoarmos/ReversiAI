@@ -14,22 +14,65 @@
     </head>
     <body onload="newGame()">
         <script src="./game.js" defer></script>
+        <script src="./search.js" defer></script>
+        <script src="./util.js" defer></script>
         <div id="center-container">
             <div id="title">
                 <a href="./index.html"><h1>Reversi AI</h1></a>
             </div>
             <div id="buttons">
+                <label for="AI1" id="label-AI1" class="disabled">Choose AI 1 (white):</label>
+                <select name="AI1" id="select-AI1" disabled>
+                    <option value="random">Random</option>
+                </select>
                 <input type="button" id="new-game-button" class="smaller-button" value="New Game">
                 <script>
                     // New game event
                     // Get the button element
-                    const newGameButton = document.getElementById('new-game-button');
+                    const newGameButton = document.getElementById("new-game-button");
                         
                     // Add click event listener to the button
-                    newGameButton.addEventListener('click', () => {
-                        // Redirect the user to the specified URL when the button is clicked
-                        window.location.href = './index.html';
+                    newGameButton.addEventListener("click", () => {
+                        // Reload the page to reset everything
+                        window.location.href = window.location.href;
                     });
+                </script>
+                <input type="button" id="start-game-button" class="smaller-button" value="Start" disabled>
+                <script>
+                    // Start game event
+                    // Get the button element
+                    const startGameButton = document.getElementById("start-game-button");
+
+                    // Add click event
+                    startGameButton.addEventListener("click", () => {
+                        // Let the game begin
+                        autoReversi({i: 2, j: 3, color: "b"});
+                        document.getElementById("select-AI1").disabled = true;
+                        document.getElementById("select-AI2").disabled = true;
+                        startGameButton.disabled = true;
+                    })
+                </script>
+                <script>
+                    if (gameType > 0) ;
+                </script>
+                <label for="AI2" id="label-AI2" class="disabled">Choose AI 2 (black):</label>
+                <select name="AI2" id="select-AI2" disabled>
+                    <option value="random">Random</option>
+                </select>
+                <script>
+                    // enable buttons that are needed based on the game type
+                    if (gameType > 0) {
+                        document.getElementById("label-AI1").classList.remove("disabled");
+                        document.getElementById("label-AI1").classList.add("active");
+                        document.getElementById("select-AI1").disabled = false;
+
+                        if (gameType == 2) {
+                            startGameButton.disabled = false;
+                            document.getElementById("label-AI2").classList.remove("disabled");
+                            document.getElementById("label-AI2").classList.add("active");
+                            document.getElementById("select-AI2").disabled = false;
+                        }
+                    }
                 </script>
             </div>
             <div>

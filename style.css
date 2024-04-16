@@ -92,3 +92,15 @@ table#board td.possible-move {
 h3 {
     text-align: center;
 }
+
+label.disabled {
+    color: #999;
+}
+
+label.active {
+    color: white;
+}
+
+select:disabled {
+    cursor: not-allowed;
+}
