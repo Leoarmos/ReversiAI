@@ -30,6 +30,18 @@ class Node {
     }
 }
 
-function reversiStep() {
+function iterativeDeepeningAlphaBeta(state, evaluationFunc) {
+    // start time in seconds
+    let startTime = new Date().getTime() / 1000;
 
+    let bestMove = null;
+    for(const depth of Array(MAX_DEPTH).keys()) {
+        if (Date().getTime / 1000 > MAX_ALLOWED_SECONDS) {
+            break;
+        }
+
+        val = -Infinity;
+
+        
+    }
 }

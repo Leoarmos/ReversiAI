@@ -2,6 +2,9 @@
 let turn;
 let gameBoard;
 
+const MAX_DEPTH = 10;
+const MAX_ALLOWED_SECONDS = 5;
+
 // Check the columns for possible moves
 // dir = 1: ↓
 // dir = -1: ↑
@@ -11,7 +14,7 @@ function checkColumn(i, j, dir) {
 
     if (((i > 0 && i < dimension - 1) || (i == 0 && dir == 1) || (i == dimension - 1 && dir == -1)) &&
             gameBoard[i + dir][j] == oppositeColor) {
-        for(let y = i + dir; y > 0 && y < dimension; y += dir) {
+        for(let y = i + dir; y >= 0 && y < dimension; y += dir) {
             if (gameBoard[y][j] == oppositeColor) {
                 opponentPawns++;
             } else if (gameBoard[y][j] == turn && opponentPawns > 0) {
@@ -35,7 +38,7 @@ function checkRow(i, j, dir) {
 
     if (((j > 0 && j < dimension -1) || (j == 0 && dir == 1) || (j == dimension - 1 && dir == -1)) &&
             gameBoard[i][j + dir] == oppositeColor) {
-        for(let x = j + dir; x < dimension && x > 0; x += dir) {
+        for(let x = j + dir; x >= 0 && x < dimension; x += dir) {
             if (gameBoard[i][x] == oppositeColor) {
                 opponentPawns++;
             } else if (gameBoard[i][x] == turn && opponentPawns > 0) {
@@ -244,7 +247,7 @@ function addPawn(i, j) {
             showWinner();
         }
     } else if ((gameType == 1 && turn == "w") || gameType == 2) {
-        setTimeout(() => autoReversi(move), 500);
+        setTimeout(() => autoReversi(move), 2000);
     }
 }
 
