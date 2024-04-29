@@ -21,9 +21,10 @@
                 <a href="./index.html"><h1>Reversi AI</h1></a>
             </div>
             <div id="buttons">
-                <label for="AI1" id="label-AI1" class="disabled">Choose AI 1 (white):</label>
+                <label for="AI1" id="label-AI1" class="disabled">Choose AI 1 (black):</label>
                 <select name="AI1" id="select-AI1" disabled>
-                    <option value="random">Random</option>
+                    <option value="randomHeuristic">Random heuristic</option>
+                    <option value="basicHeuristic">Basic heuristic</option>
                 </select>
                 <input type="button" id="new-game-button" class="smaller-button" value="New Game">
                 <script>
@@ -46,7 +47,7 @@
                     // Add click event
                     startGameButton.addEventListener("click", () => {
                         // Let the game begin
-                        autoReversi({i: 2, j: 3, color: "b"});
+                        autoReversi();
                         document.getElementById("select-AI1").disabled = true;
                         document.getElementById("select-AI2").disabled = true;
                         startGameButton.disabled = true;
@@ -55,9 +56,10 @@
                 <script>
                     if (gameType > 0) ;
                 </script>
-                <label for="AI2" id="label-AI2" class="disabled">Choose AI 2 (black):</label>
+                <label for="AI2" id="label-AI2" class="disabled">Choose AI 2 (white):</label>
                 <select name="AI2" id="select-AI2" disabled>
-                    <option value="random">Random</option>
+                    <option value="randomHeuristic">Random heuristic</option>
+                    <option value="basicHeuristic">Basic heuristic</option>
                 </select>
                 <script>
                     // enable buttons that are needed based on the game type

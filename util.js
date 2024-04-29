@@ -1,45 +1,166 @@
-function getPossibleMovesNumber(board) {
+// Check the columns for possible moves
+// dir = 1: ↓
+// dir = -1: ↑
+function checkColumn(i, j, dir, state) {
+    let oppositeColor = state.turn == "b" ? "w" : "b";
+    let opponentPawns = 0;
+
+    if (((i > 0 && i < dimension - 1) || (i == 0 && dir == 1) || (i == dimension - 1 && dir == -1)) &&
+            state.gameBoard[i + dir][j] == oppositeColor) {
+        for(let y = i + dir; y >= 0 && y < dimension; y += dir) {
+            if (state.gameBoard[y][j] == oppositeColor) {
+                opponentPawns++;
+            } else if (state.gameBoard[y][j] == state.turn && opponentPawns > 0) {
+                state.gameBoard[i][j] = "p";
+                return opponentPawns;
+            } else {
+                return 0;
+            }
+        }
+    }
+    
+    return 0;
+}
+
+// Check the rows for possible moves
+// dir = 1: →
+// dir = -1: ←
+function checkRow(i, j, dir, state) {
+    let oppositeColor = state.turn == "b" ? "w" : "b";
+    let opponentPawns = 0;
+
+    if (((j > 0 && j < dimension -1) || (j == 0 && dir == 1) || (j == dimension - 1 && dir == -1)) &&
+            state.gameBoard[i][j + dir] == oppositeColor) {
+        for(let x = j + dir; x >= 0 && x < dimension; x += dir) {
+            if (state.gameBoard[i][x] == oppositeColor) {
+                opponentPawns++;
+            } else if (state.gameBoard[i][x] == state.turn && opponentPawns > 0) {
+                state.gameBoard[i][j] = "p";
+                return opponentPawns;
+            } else {
+                return 0;
+            }
+        }
+    }
+
+    return 0;
+}
+
+// Check the diagonal \ for possible moves
+// dir = 1: ↘
+// dir = -1: ↖
+function checkDiag1(i, j, dir, state) {
+    let oppositeColor = state.turn == "b" ? "w" : "b";
+    let opponentPawns = 0;
+
+    if (((i > 0 && i < dimension - 1 && j > 0 && j < dimension - 1) ||
+            (i == 0 && dir == 1 && j < dimension - 1) ||
+            (j == 0 && dir == 1 && i < dimension - 1) ||
+            (i == dimension - 1 && dir == -1 && j > 0) ||
+            (j == dimension - 1 && dir == -1 && i > 0)) &&
+            state.gameBoard[i + dir][j + dir] == oppositeColor) {
+        for(let y = i + dir, x = j + dir; y >= 0 && y < dimension && x >= 0 && x < dimension; y += dir, x += dir) {
+            if (state.gameBoard[y][x] == oppositeColor) {
+                opponentPawns++;
+            } else if (state.gameBoard[y][x] == state.turn && opponentPawns > 0) {
+                state.gameBoard[i][j] = "p";
+                return opponentPawns;
+            } else {
+                return 0;
+            }
+        }
+    }
+
+    return 0;
+}
+
+// Check the diagonal / for possible moves
+// dir = 1: ↙       la i aumenta e la j diminuisce
+// dir = -1: ↗      la i diminuisce e la j aumenta
+function checkDiag2(i, j, dir, state) {
+    let oppositeColor = state.turn == "b" ? "w" : "b";
+    let opponentPawns = 0;
+
+    if (((i > 0 && i < dimension - 1 && j > 0 && j < dimension - 1) ||
+            (i == 0 && dir == 1 && j > 0) ||
+            (j == 0 && dir == -1 && i > 0) ||
+            (i == dimension - 1 && dir == -1 && j < dimension - 1) ||
+            (j == dimension - 1 && dir == 1 && i < dimension - 1)) &&
+            state.gameBoard[i + dir][j - dir] == oppositeColor) {
+        for(let y = i + dir, x = j - dir; y >= 0 && y < dimension && x >= 0 && x < dimension; y += dir, x -= dir) {
+            if (state.gameBoard[y][x] == oppositeColor) {
+                opponentPawns++;
+            } else if (state.gameBoard[y][x] == state.turn && opponentPawns > 0) {
+                state.gameBoard[i][j] = "p";
+                return opponentPawns;
+            } else {
+                return 0;
+            }
+        }
+    }
+
+    return 0;
+}
+
+function getPossibleMovesNumber(state) {
+    updatePossibleMoves(state);
+    
     let count = 0;
     for(let i = 0; i < dimension; i++) {
         for(let j = 0; j < dimension; j++) {
-            if(board[i][j] == "p") count++;
+            if (state.gameBoard[i][j] == "p") count++;
         }
     }
 
     return count;
 }
 
-function getPossibleMoves(board, move) {
+function getPossibleMoves(state) {
+    updatePossibleMoves(state);
+
     let moves = [];
-    // Reset the possible moves
     for(let i = 0; i < dimension; i++) {
         for(let j = 0; j < dimension; j++) {
-            if (board[i][j] == "p") board[i][j] = "0";
-        }
-    }
-    
-    board[move.i][move.j] = move.color;
-
-    for(let i=0; i < dimension; i++) {
-        for(let j=0; j < dimension; j++) {
-            if (board[i][j] != "b" && board[i][j] != "w") {
-                checkColumn(i, j, 1);
-                checkColumn(i, j, -1);
-                checkRow(i, j, 1);
-                checkRow(i, j, -1);
-                checkDiag1(i, j, 1);
-                checkDiag1(i, j, -1);
-                checkDiag2(i, j, 1);
-                checkDiag2(i, j, -1);
-
-                if (board[i][j] == "p") moves.push({
-                    i: i,
-                    j: j,
-                    color: move.color == "b" ? "b" : "w"
-                })
-            }
+            if (state.gameBoard[i][j] == "p") moves.push({
+                i: i,
+                j: j,
+            })
         }
     }
 
     return moves;
+}
+
+function getSuccessors(state) {
+    let moves = getPossibleMoves(state);
+    let successors = [];
+
+    for(let move of moves) {
+        let successor = structuredClone(state);
+        addPawn(move.i, move.j, successor);
+        successor.move = move;
+        successors.push(successor);
+    }
+
+    return successors;
+}
+
+function getBlackPawns(state) {
+    let count = 0;
+    for(let i = 0; i < dimension; i++) {
+        for(let j = 0; j < dimension; j++) {
+            if (state.gameBoard[i][j] == "b") count++;
+        }
+    }
+    return count;
+}
+
+function getWhitePawns(state) {
+    let count = 0;
+    for(let i = 0; i < dimension; i++) {
+        for(let j = 0; j < dimension; j++) {
+            if (state.gameBoard[i][j] == "w") count++;
+        }
+    }
+    return count;
 }

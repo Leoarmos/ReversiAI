@@ -1,140 +1,42 @@
 // Global game variables
-let turn;
-let gameBoard;
+let gameState = {
+    gameBoard: null,
+    turn: null,
+};
+let blackHeuristic = null;
+let whiteHeuristic = null;
 
 const MAX_DEPTH = 10;
 const MAX_ALLOWED_SECONDS = 5;
 
-// Check the columns for possible moves
-// dir = 1: ↓
-// dir = -1: ↑
-function checkColumn(i, j, dir) {
-    let oppositeColor = turn == "b" ? "w" : "b";
-    let opponentPawns = 0;
-
-    if (((i > 0 && i < dimension - 1) || (i == 0 && dir == 1) || (i == dimension - 1 && dir == -1)) &&
-            gameBoard[i + dir][j] == oppositeColor) {
-        for(let y = i + dir; y >= 0 && y < dimension; y += dir) {
-            if (gameBoard[y][j] == oppositeColor) {
-                opponentPawns++;
-            } else if (gameBoard[y][j] == turn && opponentPawns > 0) {
-                gameBoard[i][j] = "p";
-                return opponentPawns;
-            } else {
-                return 0;
-            }
-        }
-    }
-    
-    return 0;
-}
-
-// Check the rows for possible moves
-// dir = 1: →
-// dir = -1: ←
-function checkRow(i, j, dir) {
-    let oppositeColor = turn == "b" ? "w" : "b";
-    let opponentPawns = 0;
-
-    if (((j > 0 && j < dimension -1) || (j == 0 && dir == 1) || (j == dimension - 1 && dir == -1)) &&
-            gameBoard[i][j + dir] == oppositeColor) {
-        for(let x = j + dir; x >= 0 && x < dimension; x += dir) {
-            if (gameBoard[i][x] == oppositeColor) {
-                opponentPawns++;
-            } else if (gameBoard[i][x] == turn && opponentPawns > 0) {
-                gameBoard[i][j] = "p";
-                return opponentPawns;
-            } else {
-                return 0;
-            }
-        }
-    }
-
-    return 0;
-}
-
-// Check the diagonal \ for possible moves
-// dir = 1: ↘
-// dir = -1: ↖
-function checkDiag1(i, j, dir) {
-    let oppositeColor = turn == "b" ? "w" : "b";
-    let opponentPawns = 0;
-
-    if (((i > 0 && i < dimension - 1 && j > 0 && j < dimension - 1) ||
-            (i == 0 && dir == 1 && j < dimension - 1) ||
-            (j == 0 && dir == 1 && i < dimension - 1) ||
-            (i == dimension - 1 && dir == -1 && j > 0) ||
-            (j == dimension - 1 && dir == -1 && i > 0)) &&
-            gameBoard[i + dir][j + dir] == oppositeColor) {
-        for(let y = i + dir, x = j + dir; y >= 0 && y < dimension && x >= 0 && x < dimension; y += dir, x += dir) {
-            if (gameBoard[y][x] == oppositeColor) {
-                opponentPawns++;
-            } else if (gameBoard[y][x] == turn && opponentPawns > 0) {
-                gameBoard[i][j] = "p";
-                return opponentPawns;
-            } else {
-                return 0;
-            }
-        }
-    }
-
-    return 0;
-}
-
-// Check the diagonal / for possible moves
-// dir = 1: ↙       la i aumenta e la j diminuisce
-// dir = -1: ↗      la i diminuisce e la j aumenta
-function checkDiag2(i, j, dir) {
-    let oppositeColor = turn == "b" ? "w" : "b";
-    let opponentPawns = 0;
-
-    if (((i > 0 && i < dimension - 1 && j > 0 && j < dimension - 1) ||
-            (i == 0 && dir == 1 && j > 0) ||
-            (j == 0 && dir == -1 && i > 0) ||
-            (i == dimension - 1 && dir == -1 && j < dimension - 1) ||
-            (j == dimension - 1 && dir == 1 && i < dimension - 1)) &&
-            gameBoard[i + dir][j - dir] == oppositeColor) {
-        for(let y = i + dir, x = j - dir; y >= 0 && y < dimension && x >= 0 && x < dimension; y += dir, x -= dir) {
-            if (gameBoard[y][x] == oppositeColor) {
-                opponentPawns++;
-            } else if (gameBoard[y][x] == turn && opponentPawns > 0) {
-                gameBoard[i][j] = "p";
-                return opponentPawns;
-            } else {
-                return 0;
-            }
-        }
-    }
-
-    return 0;
-}
-
-function updatePossibleMoves() {
+// Put a "p" where there is a possible move in the gameboard of the state parameter
+function updatePossibleMoves(state) {
     // Reset the possible moves
     for(let i = 0; i < dimension; i++) {
         for(let j = 0; j < dimension; j++) {
-            if (gameBoard[i][j] == "p") gameBoard[i][j] = "0";
+            if (state.gameBoard[i][j] == "p") state.gameBoard[i][j] = "0";
         }
     }
     
     for(let i=0; i < dimension; i++) {
         for(let j=0; j < dimension; j++) {
-            if (gameBoard[i][j] != "b" && gameBoard[i][j] != "w") {
-                checkColumn(i, j, 1);
-                checkColumn(i, j, -1);
-                checkRow(i, j, 1);
-                checkRow(i, j, -1);
-                checkDiag1(i, j, 1);
-                checkDiag1(i, j, -1);
-                checkDiag2(i, j, 1);
-                checkDiag2(i, j, -1);
+            if (state.gameBoard[i][j] != "b" && state.gameBoard[i][j] != "w") {
+                checkColumn(i, j, 1, state);
+                checkColumn(i, j, -1, state);
+                checkRow(i, j, 1, state);
+                checkRow(i, j, -1, state);
+                checkDiag1(i, j, 1, state);
+                checkDiag1(i, j, -1, state);
+                checkDiag2(i, j, 1, state);
+                checkDiag2(i, j, -1, state);
             }
         }
     }
 }
 
-function updateGameboard() {
-    updatePossibleMoves();
+// Draw the gameboard
+function updateGameboard(state) {
+    updatePossibleMoves(state);
     
     let board = "<table id='board'>";
 
@@ -142,7 +44,7 @@ function updateGameboard() {
         board += "<tr>";
         for(let j=0; j < dimension; j++) {
             board += "<td id='cell-" + i + "-" + j + "'";
-            switch(gameBoard[i][j]) {
+            switch(state.gameBoard[i][j]) {
                 case "b": 
                     board += "><img src='black.svg'></td>";
                     break;
@@ -150,7 +52,7 @@ function updateGameboard() {
                     board += "><img src='white.svg'></td>";
                     break;
                 case "p":
-                    board += " class='possible-move' onclick='addPawn(" + i + ", " + j + ")'>";
+                    board += " class='possible-move' onclick='addPawn(" + i + ", " + j + ", gameState)'>";
                     board += "<img src='outline.svg'></td>";
                     break;
                 case "0":
@@ -163,7 +65,7 @@ function updateGameboard() {
 
     board += "</table>";
     document.getElementById("board-container").innerHTML = board;
-    document.getElementById("message").innerHTML = "It's " + (turn == "b" ? "Black" : "White") +  "'s turn";
+    document.getElementById("message").innerHTML = "It's " + (state.turn == "b" ? "Black" : "White") +  "'s turn";
 }
 
 function showWinner() {
@@ -172,17 +74,18 @@ function showWinner() {
 
     for(let i = 0; i < dimension; i++) {
         for(let j = 0; j < dimension; j++) {
-            if (gameBoard[i][j] == "b") countB++;
-            else if (gameBoard[i][j] == "w") countW++;
+            if (gameState.gameBoard[i][j] == "b") countB++;
+            else if (gameState.gameBoard[i][j] == "w") countW++;
         }
     }
 
     document.getElementById("message").innerHTML = "The winner is " + (countB > countW ? "Black" : "White");
 }
 
+// Reset everything for a new game to start
 function newGame() {
-    gameBoard = [];
-    turn = "b";
+    gameState.gameBoard = [];
+    gameState.turn = "b";
 
     for(let i = 0; i < dimension; i++) {
         let row = [];
@@ -198,61 +101,81 @@ function newGame() {
                 row.push("0");
             }
         }
-        gameBoard.push(row);
+        gameState.gameBoard.push(row);
     }
-    updateGameboard();
+    updateGameboard(gameState);
 }
 
-function addPawn(i, j) {
-    let move = {
-        i: i,
-        j: j,
-        color: turn
-    };
-
-    let positiveY = checkColumn(i, j, 1);
-    let negativeY = checkColumn(i, j, -1);
-    let positiveX = checkRow(i, j, 1);
-    let negativeX = checkRow(i, j, -1);
-    let positiveDiag1 = checkDiag1(i, j, 1);
-    let negativeDiag1 = checkDiag1(i, j, -1);
-    let positiveDiag2 = checkDiag2(i, j, 1);
-    let negativeDiag2 = checkDiag2(i, j, -1);
+// Add a pawn in the selected cell in the gameboard of the state parameter
+function addPawn(i, j, state) {
+    let positiveY = checkColumn(i, j, 1, state);
+    let negativeY = checkColumn(i, j, -1, state);
+    let positiveX = checkRow(i, j, 1, state);
+    let negativeX = checkRow(i, j, -1, state);
+    let positiveDiag1 = checkDiag1(i, j, 1, state);
+    let negativeDiag1 = checkDiag1(i, j, -1, state);
+    let positiveDiag2 = checkDiag2(i, j, 1, state);
+    let negativeDiag2 = checkDiag2(i, j, -1, state);
     // console.log(positiveY, negativeY, positiveX, negativeX, positiveDiag1, negativeDiag1, positiveDiag2, negativeDiag2);
 
-    for(let y = 0; y <= positiveY; y++) gameBoard[i + y][j] = turn;
-    for(let y = 0; y <= negativeY; y++) gameBoard[i - y][j] = turn;
-    for(let x = 0; x <= positiveX; x++) gameBoard[i][j + x] = turn;
-    for(let x = 0; x <= negativeX; x++) gameBoard[i][j - x] = turn;
-    for(let d1 = 0; d1 <= positiveDiag1; d1++) gameBoard[i + d1][j + d1] = turn;
-    for(let d1 = 0; d1 <= negativeDiag1; d1++) gameBoard[i - d1][j - d1] = turn;
-    for(let d2 = 0; d2 <= positiveDiag2; d2++) gameBoard[i + d2][j - d2] = turn;
-    for(let d2 = 0; d2 <= negativeDiag2; d2++) gameBoard[i - d2][j + d2] = turn;
+    for(let y = 0; y <= positiveY; y++) state.gameBoard[i + y][j] = state.turn;
+    for(let y = 0; y <= negativeY; y++) state.gameBoard[i - y][j] = state.turn;
+    for(let x = 0; x <= positiveX; x++) state.gameBoard[i][j + x] = state.turn;
+    for(let x = 0; x <= negativeX; x++) state.gameBoard[i][j - x] = state.turn;
+    for(let d1 = 0; d1 <= positiveDiag1; d1++) state.gameBoard[i + d1][j + d1] = state.turn;
+    for(let d1 = 0; d1 <= negativeDiag1; d1++) state.gameBoard[i - d1][j - d1] = state.turn;
+    for(let d2 = 0; d2 <= positiveDiag2; d2++) state.gameBoard[i + d2][j - d2] = state.turn;
+    for(let d2 = 0; d2 <= negativeDiag2; d2++) state.gameBoard[i - d2][j + d2] = state.turn;
 
     // Now it's the opponent's turn
-    turn = turn == "b" ? "w" :"b";
-    updateGameboard();
+    state.turn = state.turn == "b" ? "w" :"b";
+    updateGameboard(state);
 
     // Check if the opponent has no possible moves
-    let count = getPossibleMovesNumber(gameBoard);
+    let count = getPossibleMovesNumber(state);
     if (count == 0) {
         // Opponent has no possible move, turn is inverted
-        turn = turn == "b" ? "w" :"b";
-        updateGameboard();
+        state.turn = state.turn == "b" ? "w" : "b";
+        updateGameboard(state);
 
         // Check if current player can make a move
-        count = getPossibleMovesNumber(gameBoard);
+        count = getPossibleMovesNumber(state);
         if (count == 0) {
             // Current player also has no moves
             showWinner();
         }
-    } else if ((gameType == 1 && turn == "w") || gameType == 2) {
-        setTimeout(() => autoReversi(move), 2000);
     }
 }
 
-function autoReversi(move) {
-    let moves = getPossibleMoves(gameBoard, move);
-    let pickedMove = moves[Math.floor(Math.random() * moves.length)];
-    addPawn(pickedMove.i, pickedMove.j);
+function reversiStep(turn) {
+    if (turn == "b") {
+        switch (blackHeuristic) {
+            case "randomHeuristic": 
+                evaluationFunc = randomHeuristic;
+                break;
+            case "basicHeuristic":
+                evaluationFunc = basicHeuristic;
+        }
+        let move = iterativeDeepeningAlphaBeta(gameState, evaluationFunc);
+    } else {
+        switch (whiteHeuristic) {
+            case "randomHeuristic": 
+                evaluationFunc = randomHeuristic;
+                break;
+            case "basicHeuristic":
+                evaluationFunc = basicHeuristic;
+        }
+        let move = iterativeDeepeningAlphaBeta(gameState, evaluationFunc);
+    }
+
+    addPawn(move.i, move.j, gameState);
+    setTimeout(() => reversiStep(gameState.turn), 7000);
+}
+
+function autoReversi() {
+    blackHeuristic = document.getElementById("select-AI1").value;
+    whiteHeuristic = document.getElementById("select-AI2").value;
+    // console.log(blackHeuristic, whiteHeuristic);
+
+    setTimeout(() => reversiStep(gameState.turn), 1000);
 }

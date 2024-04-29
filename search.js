@@ -1,47 +1,81 @@
-class Node {
-    constructor() {
-        this.chosenMove = null;
-        this.state = {
-            turn: null,         // color of next turn
-            gameBoard: null
-        }
-        this.possibleMoves = [];
-        this.parent = null;
-        this.children = [];
-        this.depth = 0;
-        this.value = 0;
-    }
+function isTerminalState(state) {
+    let opponentState = structuredClone(state);
+    opponentState.turn = opponentState.turn == "b" ? "w" : "b";
+    return (getPossibleMovesNumber(state) == 0 && getPossibleMovesNumber(opponentState) == 0)
+}
 
-    addChild(child) {
-        this.children.push(child);
-        child.parent = node;
-    }
+function getTerminalUtility(state) {
+    let blackPawns = getBlackPawns(state);
+    let whitePawns = getWhitePawns(state);
 
-    expand() {
-        if (this.possibleMoves.length == 0) return;
-        
-        for(let move of this.possibleMoves) {
-            childNode = new Node();
-            childNode.chosenMove = move;
-            childNode.possibleMoves = 
-            childNode.depth = this.depth + 1;
-            this.addChild(child);
-        }
-    }
+    return (blackPawns > whitePawns && state.turn == "b") ? Infinity : -Infinity;
+}
+
+function randomHeuristic(state) {
+    return Math.floor(Math.random() * 100);
+}
+
+function basicHeuristic(state) {
+    let blackPawns = getBlackPawns(state);
+    let whitePawns = getWhitePawns(state);
+
+    return (blackPawns > whitePawns && state.turn == "b") ? 100 : -100;
 }
 
 function iterativeDeepeningAlphaBeta(state, evaluationFunc) {
     // start time in seconds
     let startTime = new Date().getTime() / 1000;
+    console.log(startTime);
+
+    function alphaBetaSearch(state, alpha, beta, depth) {
+        function maxValue(state, alpha, beta, depth) {
+            let value = -Infinity;
+            for(let successor of getSuccessors(state)) {
+                value = Math.max(value, alphaBetaSearch(successor, alpha, beta, depth));
+                if (value >= beta) return value;
+                alpha = Math.max(alpha, value);
+            }
+            // console.log(state.turn, depth);
+            return value;
+        }
+
+        function minValue(state, alpha, beta, depth) {
+            let value = Infinity;
+            for(let successor of getSuccessors(state)) {
+                value = Math.min(value, alphaBetaSearch(successor, alpha, beta, depth - 1));
+                if (value <= alpha) return value;
+                beta = Math.min(beta, value);
+            }
+            // console.log(state.turn, depth);
+            return value;
+        }
+
+        if (isTerminalState(state)) return getTerminalUtility(state);
+        if (depth <= 0 || (new Date().getTime / 1000) - startTime > MAX_ALLOWED_SECONDS) return evaluationFunc(state);
+        if (state.turn == "b") {
+            return maxValue(state, alpha, beta, depth);
+        } else {
+            return minValue(state, alpha, beta, depth);
+        }
+    }
 
     let bestMove = null;
-    for(const depth of Array(MAX_DEPTH).keys()) {
-        if (Date().getTime / 1000 > MAX_ALLOWED_SECONDS) {
+
+    for(let depth = 1; depth <= MAX_DEPTH; depth++) {
+        if ((new Date().getTime / 1000) - startTime > MAX_ALLOWED_SECONDS) {
             break;
         }
 
-        val = -Infinity;
-
-        
+        let val = -Infinity;
+        for(let successor of getSuccessors(state)) {
+            let score = alphaBetaSearch(successor, -Infinity, Infinity, depth);
+            if (score > val) {
+                val = score;
+                bestMove = successor.move;
+            }
+        }
     }
+
+    console.log(bestMove);
+    return bestMove;
 }
