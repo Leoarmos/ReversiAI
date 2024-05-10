@@ -164,3 +164,37 @@ function getWhitePawns(state) {
     }
     return count;
 }
+
+function getBlackPawnsBorder(state) {
+    let count = 0;
+    // first and last columns
+    for(let i = 0; i < dimension; i++) {
+        if (state.gameBoard[i][0] == "b") count ++;
+        if (state.gameBoard[i][dimension - 1] == "b") count++;
+    }
+
+    // first and last rows
+    for(let j = 0; j < dimension; j++) {
+        if (state.gameBoard[0][j] == "b") count++;
+        if (state.gameBoard[dimension - 1][j] == "b") count++;
+    }
+
+    return count;
+}
+
+function getWhitePawnsBorder(state) {
+    let count = 0;
+    // first and last columns
+    for(let i = 0; i < dimension; i++) {
+        if (state.gameBoard[i][0] == "w") count ++;
+        if (state.gameBoard[i][dimension - 1] == "w") count++;
+    }
+
+    // first and last rows
+    for(let j = 0; j < dimension; j++) {
+        if (state.gameBoard[0][j] == "w") count++;
+        if (state.gameBoard[dimension - 1][j] == "w") count++;
+    }
+
+    return count;
+}

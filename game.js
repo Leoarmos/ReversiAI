@@ -7,7 +7,7 @@ let blackHeuristic = null;
 let whiteHeuristic = null;
 
 const MAX_DEPTH = 10;
-const MAX_ALLOWED_SECONDS = 5;
+const MAX_ALLOWED_SECONDS = 3;
 
 // Put a "p" where there is a possible move in the gameboard of the state parameter
 function updatePossibleMoves(state) {
@@ -148,28 +148,59 @@ function addPawn(i, j, state) {
 }
 
 function reversiStep(turn) {
+    console.log(turn + " turn");
+    let move = null;
     if (turn == "b") {
         switch (blackHeuristic) {
-            case "randomHeuristic": 
+            case "randomHeuristic":
                 evaluationFunc = randomHeuristic;
                 break;
-            case "basicHeuristic":
-                evaluationFunc = basicHeuristic;
+            case "morePawnsHeuristic":
+                evaluationFunc = morePawnsHeuristic;
+                break;
+            case "eatingHeuristic":
+                evaluationFunc = eatingHeuristic;
+                break;
+            case "conquestBorderHeuristic":
+                evaluationFunc = conquestBorderHeuristic;
+                break;
+            case "skipOpponentTurnHeuristic":
+                evaluationFunc = skipOpponentTurnHeuristic;
+                break;
+            case "completeHeuristic":
+                evaluationFunc = completeHeuristic;
+                break;
         }
-        let move = iterativeDeepeningAlphaBeta(gameState, evaluationFunc);
+        move = iterativeDeepeningAlphaBeta(gameState, evaluationFunc);
     } else {
         switch (whiteHeuristic) {
             case "randomHeuristic": 
                 evaluationFunc = randomHeuristic;
                 break;
-            case "basicHeuristic":
-                evaluationFunc = basicHeuristic;
+            case "morePawnsHeuristic":
+                evaluationFunc = morePawnsHeuristic;
+                break;
+            case "eatingHeuristic":
+                evaluationFunc = eatingHeuristic;
+                break;
+            case "conquestBorderHeuristic":
+                evaluationFunc = conquestBorderHeuristic;
+                break;
+            case "skipOpponentTurnHeuristic":
+                evaluationFunc = skipOpponentTurnHeuristic;
+                break;
+            case "completeHeuristic":
+                evaluationFunc = completeHeuristic;
+                break;
         }
-        let move = iterativeDeepeningAlphaBeta(gameState, evaluationFunc);
+        move = iterativeDeepeningAlphaBeta(gameState, evaluationFunc);
     }
 
-    addPawn(move.i, move.j, gameState);
-    setTimeout(() => reversiStep(gameState.turn), 7000);
+    if(move != null) {
+        addPawn(move.i, move.j, gameState);
+        setTimeout(() => reversiStep(gameState.turn), MAX_ALLOWED_SECONDS);
+        console.log("finito");
+    }
 }
 
 function autoReversi() {
@@ -177,5 +208,8 @@ function autoReversi() {
     whiteHeuristic = document.getElementById("select-AI2").value;
     // console.log(blackHeuristic, whiteHeuristic);
 
-    setTimeout(() => reversiStep(gameState.turn), 1000);
+    setTimeout(() => {
+        reversiStep(gameState.turn);
+    }, 1000);
+    //setTimeout(() => reversiStep(gameState.turn), 1000);
 }

@@ -24,7 +24,11 @@
                 <label for="AI1" id="label-AI1" class="disabled">Choose AI 1 (black):</label>
                 <select name="AI1" id="select-AI1" disabled>
                     <option value="randomHeuristic">Random heuristic</option>
-                    <option value="basicHeuristic">Basic heuristic</option>
+                    <option value="morePawnsHeuristic">More pawns heuristic</option>
+                    <option value="eatingHeuristic">Eating heuristic</option>
+                    <option value="conquestBorder">Conquest border heuristic</option>
+                    <option value="skipOpponentTurn">Skip opponent's turn heuristic</option>
+                    <option value="completeHeuristic">Complete Heuristic</option>
                 </select>
                 <input type="button" id="new-game-button" class="smaller-button" value="New Game">
                 <script>
@@ -59,7 +63,11 @@
                 <label for="AI2" id="label-AI2" class="disabled">Choose AI 2 (white):</label>
                 <select name="AI2" id="select-AI2" disabled>
                     <option value="randomHeuristic">Random heuristic</option>
-                    <option value="basicHeuristic">Basic heuristic</option>
+                    <option value="morePawnsHeuristic">More pawns heuristic</option>
+                    <option value="eatingHeuristic">Eating heuristic</option>
+                    <option value="conquestBorder">Conquest border heuristic</option>
+                    <option value="skipOpponentTurn">Skip opponent's turn heuristic</option>
+                    <option value="completeHeuristic">Complete heuristic</option>
                 </select>
                 <script>
                     // enable buttons that are needed based on the game type
