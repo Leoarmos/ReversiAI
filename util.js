@@ -29,7 +29,7 @@ function checkRow(i, j, dir, state) {
     let oppositeColor = state.turn == "b" ? "w" : "b";
     let opponentPawns = 0;
 
-    if (((j > 0 && j < dimension -1) || (j == 0 && dir == 1) || (j == dimension - 1 && dir == -1)) &&
+    if (((j > 0 && j < dimension - 1) || (j == 0 && dir == 1) || (j == dimension - 1 && dir == -1)) &&
             state.gameBoard[i][j + dir] == oppositeColor) {
         for(let x = j + dir; x >= 0 && x < dimension; x += dir) {
             if (state.gameBoard[i][x] == oppositeColor) {
@@ -137,7 +137,7 @@ function getSuccessors(state) {
 
     for(let move of moves) {
         let successor = structuredClone(state);
-        addPawn(move.i, move.j, successor);
+        addPawn(move.i, move.j, successor, false);
         successor.move = move;
         successors.push(successor);
     }
@@ -145,56 +145,149 @@ function getSuccessors(state) {
     return successors;
 }
 
-function getBlackPawns(state) {
+function getPawns(state, color) {
     let count = 0;
     for(let i = 0; i < dimension; i++) {
         for(let j = 0; j < dimension; j++) {
-            if (state.gameBoard[i][j] == "b") count++;
+            if (state.gameBoard[i][j] == color) count++;
         }
     }
+
     return count;
 }
 
-function getWhitePawns(state) {
+function getPawnsBorder(state, color) {
     let count = 0;
-    for(let i = 0; i < dimension; i++) {
-        for(let j = 0; j < dimension; j++) {
-            if (state.gameBoard[i][j] == "w") count++;
-        }
-    }
-    return count;
-}
 
-function getBlackPawnsBorder(state) {
-    let count = 0;
     // first and last columns
     for(let i = 0; i < dimension; i++) {
-        if (state.gameBoard[i][0] == "b") count ++;
-        if (state.gameBoard[i][dimension - 1] == "b") count++;
+        if (state.gameBoard[i][0] == color) count ++;
+        if (state.gameBoard[i][dimension - 1] == color) count++;
     }
 
     // first and last rows
     for(let j = 0; j < dimension; j++) {
-        if (state.gameBoard[0][j] == "b") count++;
-        if (state.gameBoard[dimension - 1][j] == "b") count++;
+        if (state.gameBoard[0][j] == color) count++;
+        if (state.gameBoard[dimension - 1][j] == color) count++;
     }
 
     return count;
 }
 
-function getWhitePawnsBorder(state) {
+function getPawnsCorner(state, color) {
     let count = 0;
-    // first and last columns
-    for(let i = 0; i < dimension; i++) {
-        if (state.gameBoard[i][0] == "w") count ++;
-        if (state.gameBoard[i][dimension - 1] == "w") count++;
-    }
+    corners = [
+        [0, 0], [0, dimension - 1],
+        [dimension - 1, 0], [dimension - 1, dimension - 1]
+    ];
 
-    // first and last rows
-    for(let j = 0; j < dimension; j++) {
-        if (state.gameBoard[0][j] == "w") count++;
-        if (state.gameBoard[dimension - 1][j] == "w") count++;
+    for(let [cRow, cCol] of corners) {
+        if (state.gameBoard[cRow][cCol] == color) count++;
     }
 
     return count;
+}
+
+// returns the number of potential moves for a specific color
+function getPotentialMobility(state, color) {
+    let result = 0;
+    for(let i = 0; i < dimension; i++) {
+        for(let j = 0; j < dimension; j++) {
+            if (state.gameBoard[i][j] != "w" && state.gameBoard[i][j] != "b" && 
+                    ((i > 0 && j > 0 && state.gameBoard[i - 1][j - 1] == color) || 
+                    (i > 0 && state.gameBoard[i - 1][j] == color) ||
+                    (i > 0 && j < dimension - 1 && state.gameBoard[i - 1][j + 1] == color) ||
+                    (j > 0 && state.gameBoard[i][j - 1] == color) ||
+                    (j < dimension - 1 && state.gameBoard[i][j + 1] == color) ||
+                    (i < dimension - 1 && j > 0 && state.gameBoard[i + 1][j - 1] == color) ||
+                    (i < dimension - 1 && state.gameBoard[i + 1][j] == color) ||
+                    (i < dimension - 1 && j < dimension - 1 && state.gameBoard[i + 1][j + 1] == color))) {
+                result++;
+            }
+        }
+    }
+    return result;
+}
+
+// returns the number of safe, semi-safe and unsafe pawns
+function getPawnsStats(state, color) {
+    let corners = [
+        [0, 0], [0, dimension - 1],
+        [dimension - 1, 0], [dimension - 1, dimension - 1]
+    ];
+
+    let directions = [
+        [0, 1], [1, 0], [0, -1], [-1, 0],   // → ↓ ← ↑
+        [1, 1], [1, -1], [-1, 1], [-1, -1]  // ↘ ↙ ↗ ↖
+    ];
+
+    let opponent = color == "b" ? "w" : "b";
+
+    let result = {
+        safePawns: 0,
+        semisafePawns: 0,
+        unsafePawns: 0,
+    };
+
+    // corners are always safe
+    for (let [cRow, cCol] of corners) {
+        if (state.gameBoard[cRow][cCol] == color) result.safePawns++;
+    }
+
+    for(let i = 0; i < dimension; i++) {
+        for(let j = 0; j < dimension; j++) {
+            // borders are safe if they are connected to a corner
+            if (i == 0 || i == dimension - 1 || j == 0 || j == dimension - 1) {
+                for(let [cRow, cCol] of corners) {
+                    // if the pawn is not on the border of the corner
+                    if (i != cRow && j != cCol) continue;
+                    
+                    // the corner is of the right color
+                    if (state.gameBoard[cRow][cCol] == color) {
+                        let safeBorder = 1;
+                        let dirRow = cRow > i ? 1 : (cRow < i ? -1 : 0);
+                        let dirCol = cCol > j ? 1 : (cCol < j ? -1 : 0);
+
+                        let row = i + dirRow;
+                        let col = j + dirCol;
+
+                        while (row != cRow || col != cCol) {
+                            if (state.gameBoard[row][col] != color) {
+                                safeBorder = 0;
+                                break;
+                            }
+
+                            row += dirRow;
+                            col += dirCol;
+                        }
+
+                        result.safePawns += safeBorder;
+                    }
+                }
+            }
+
+            // check if the pawn can be eaten in any direction
+            let safeDir = true;
+            let unsafeDir = false;
+            for(let [dirRow, dirCol] of directions) {
+                let row = i + dirRow;
+                let col = j + dirCol;
+
+                while ((row >= 0 && row < dimension && col >= 0 && col < dimension) && safeDir) {
+                    if (state.gameBoard[row][col] == "p") {
+                        safeDir = false;
+                        unsafeDir = true;
+                    } else if (state.gameBoard[row][col] == opponent) {
+                        safeDir = false;
+                    } else if (state.gameBoard[row][col] == "0") break;
+                    row += dirRow;
+                    col += dirCol;
+                }
+            }
+            if (safeDir) result.safePawns++;
+            else if (!safeDir && !unsafeDir) result.semisafePawns++;
+            else if (unsafeDir) result.unsafePawns++;
+        }
+    }
+    return result;
 }

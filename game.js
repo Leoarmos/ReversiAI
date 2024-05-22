@@ -52,7 +52,7 @@ function updateGameboard(state) {
                     board += "><img src='white.svg'></td>";
                     break;
                 case "p":
-                    board += " class='possible-move' onclick='addPawn(" + i + ", " + j + ", gameState)'>";
+                    board += " class='possible-move' onclick='addPawn(" + i + ", " + j + ", gameState, true)'>";
                     board += "<img src='outline.svg'></td>";
                     break;
                 case "0":
@@ -79,7 +79,7 @@ function showWinner() {
         }
     }
 
-    document.getElementById("message").innerHTML = "The winner is " + (countB > countW ? "Black" : "White");
+    document.getElementById("message").innerHTML = "The winner is " + (countB > countW ? "Black" : "White") + " – Bl: " + countB + " Wh: " + countW;
 }
 
 // Reset everything for a new game to start
@@ -107,7 +107,7 @@ function newGame() {
 }
 
 // Add a pawn in the selected cell in the gameboard of the state parameter
-function addPawn(i, j, state) {
+function addPawn(i, j, state, toDraw) {
     let positiveY = checkColumn(i, j, 1, state);
     let negativeY = checkColumn(i, j, -1, state);
     let positiveX = checkRow(i, j, 1, state);
@@ -129,14 +129,22 @@ function addPawn(i, j, state) {
 
     // Now it's the opponent's turn
     state.turn = state.turn == "b" ? "w" :"b";
-    updateGameboard(state);
+    if (toDraw) {
+        updateGameboard(state);
+    } else {
+        updatePossibleMoves(state);
+    }
 
     // Check if the opponent has no possible moves
     let count = getPossibleMovesNumber(state);
     if (count == 0) {
         // Opponent has no possible move, turn is inverted
         state.turn = state.turn == "b" ? "w" : "b";
-        updateGameboard(state);
+        if (toDraw) {
+            updateGameboard(state);
+        } else {
+            updatePossibleMoves(state);
+        }
 
         // Check if current player can make a move
         count = getPossibleMovesNumber(state);
@@ -164,11 +172,23 @@ function reversiStep(turn) {
             case "conquestBorderHeuristic":
                 evaluationFunc = conquestBorderHeuristic;
                 break;
+            case "conquestCornerHeuristic":
+                evaluationFunc = conquestCornerHeuristic;
+                break;
             case "skipOpponentTurnHeuristic":
                 evaluationFunc = skipOpponentTurnHeuristic;
                 break;
-            case "completeHeuristic":
-                evaluationFunc = completeHeuristic;
+            case "mobilityHeuristic":
+                evaluationFunc = mobilityHeuristic;
+                break;
+            case "safePawnsHeuristic":
+                evaluationFunc = safePawnsHeuristic;
+                break;
+            case "basicHeuristic":
+                evaluationFunc = basicHeuristic;
+                break;
+            case "weightedHeuristic":
+                evaluationFunc = weightedHeuristic;
                 break;
         }
         move = iterativeDeepeningAlphaBeta(gameState, evaluationFunc);
@@ -186,18 +206,30 @@ function reversiStep(turn) {
             case "conquestBorderHeuristic":
                 evaluationFunc = conquestBorderHeuristic;
                 break;
+            case "conquestCornerHeuristic":
+                evaluationFunc = conquestCornerHeuristic;
+                break;
             case "skipOpponentTurnHeuristic":
                 evaluationFunc = skipOpponentTurnHeuristic;
                 break;
-            case "completeHeuristic":
-                evaluationFunc = completeHeuristic;
+            case "mobilityHeuristic":
+                evaluationFunc = mobilityHeuristic;
+                break;
+            case "safePawnsHeuristic":
+                evaluationFunc = safePawnsHeuristic;
+                break;
+            case "basicHeuristic":
+                evaluationFunc = basicHeuristic;
+                break;
+            case "weightedHeuristic":
+                evaluationFunc = weightedHeuristic;
                 break;
         }
         move = iterativeDeepeningAlphaBeta(gameState, evaluationFunc);
     }
 
     if(move != null) {
-        addPawn(move.i, move.j, gameState);
+        addPawn(move.i, move.j, gameState, true);
         setTimeout(() => reversiStep(gameState.turn), MAX_ALLOWED_SECONDS);
         console.log("finito");
     }
