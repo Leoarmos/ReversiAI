@@ -10,6 +10,7 @@
             const urlParams = new URLSearchParams(window.location.search);
             const dimension = urlParams.get('dimension');
             const gameType = urlParams.get('gameType');
+            const playerColor = urlParams.get('playerColor');
         </script>
     </head>
     <body onload="newGame()">
@@ -61,9 +62,6 @@
                         startGameButton.disabled = true;
                     })
                 </script>
-                <script>
-                    if (gameType > 0) ;
-                </script>
                 <label for="AI2" id="label-AI2" class="disabled">Choose AI 2 (white):</label>
                 <select name="AI2" id="select-AI2" disabled>
                     <option value="randomHeuristic">Random heuristic</option>
@@ -79,17 +77,31 @@
                 </select>
                 <script>
                     // enable buttons that are needed based on the game type
-                    if (gameType > 0) {
+                    if (gameType == 2) {
+                        // Activate both AI
                         document.getElementById("label-AI1").classList.remove("disabled");
                         document.getElementById("label-AI1").classList.add("active");
                         document.getElementById("select-AI1").disabled = false;
 
-                        if (gameType == 2) {
-                            startGameButton.disabled = false;
-                            document.getElementById("label-AI2").classList.remove("disabled");
-                            document.getElementById("label-AI2").classList.add("active");
-                            document.getElementById("select-AI2").disabled = false;
-                        }
+                        document.getElementById("label-AI2").classList.remove("disabled");
+                        document.getElementById("label-AI2").classList.add("active");
+                        document.getElementById("select-AI2").disabled = false;
+
+                        startGameButton.disabled = false;
+                    } else if (gameType == 1 && playerColor == "b") {
+                        // Activate only white AI
+                        document.getElementById("label-AI2").classList.remove("disabled");
+                        document.getElementById("label-AI2").classList.add("active");
+                        document.getElementById("select-AI2").disabled = false;
+                        
+                        startGameButton.disabled = false;
+                    } else if (gameType == 1 && playerColor == "w") {
+                        // Activate only black AI
+                        document.getElementById("label-AI1").classList.remove("disabled");
+                        document.getElementById("label-AI1").classList.add("active");
+                        document.getElementById("select-AI1").disabled = false;
+
+                        startGameButton.disabled = false;
                     }
                 </script>
             </div>

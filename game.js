@@ -153,6 +153,11 @@ function addPawn(i, j, state, toDraw) {
             showWinner();
         }
     }
+    if (toDraw && gameType == 1 && gameState.turn != playerColor) {
+        setTimeout(() => reversiStep(gameState.turn), MAX_ALLOWED_SECONDS);
+    } else if (toDraw && gameType == 2) {
+        setTimeout(() => reversiStep(gameState.turn), MAX_ALLOWED_SECONDS);
+    }
 }
 
 function reversiStep(turn) {
@@ -230,7 +235,6 @@ function reversiStep(turn) {
 
     if(move != null) {
         addPawn(move.i, move.j, gameState, true);
-        setTimeout(() => reversiStep(gameState.turn), MAX_ALLOWED_SECONDS);
         console.log("finito");
     }
 }

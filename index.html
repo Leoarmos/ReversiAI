@@ -11,6 +11,9 @@
             let sizeSelected = false;
             let gametypeSelected = false;
 
+            // Default player color
+            let playerColor = "b";
+
             function updateStartGameButton() {
                 if (sizeSelected && gametypeSelected) {
                     startGameButton.disabled = false;
@@ -26,8 +29,8 @@
             <div id="title">
                 <a href="./index.html"><h1>Reversi AI</h1></a>
             </div>
+            <h3>Choose the dimension of the grid:</h3>
             <div id="size-buttons" class="padding">
-                <h3>Choose the dimension of the grid</h3>
                 <input type="button" value="8x8" data-value="8" class="board-size">
                 <input type="button" value="10x10" data-value="10" class="board-size">
                 <input type="button" value="12x12" data-value="12" class="board-size">
@@ -55,8 +58,8 @@
                     });
                 </script>
             </div>
+            <h3>Choose how you want to play:</h3>
             <div id="gameplay-buttons" class="padding">
-                <h3>Choose how you want to play</h3>
                 <input type="button" value="Player vs Player" data-value="0" class="game-type">
                 <input type="button" value="Player vs AI" data-value="1" class="game-type">
                 <input type="button" value="AI vs AI" data-value="2" class="game-type">
@@ -80,9 +83,29 @@
                             // Update the flag to enable the start game button
                             gametypeSelected = true;
                             updateStartGameButton();
-                            console.log(gametypeSelected)
+                            console.log(gametypeSelected);
                         });
                     });
+                </script>
+            </div>
+            <h3>Choose your color (only matters if playing against AI):</h3>
+            <div id="player-images">
+                <img src="./black.svg" id="black-img" data-value="b" class="player-color selected">
+                <img src="./white.svg" id="white-img" data-value="w" class="player-color">
+                <script>
+                    const playerImgs = document.querySelectorAll("img.player-color");
+
+                    playerImgs.forEach(image => {
+                        image.addEventListener('click', () => {
+                            playerImgs.forEach(img => img.classList.remove("selected"));
+
+                            image.classList.add("selected");
+
+                            playerColor = image.getAttribute("data-value");
+
+                            console.log(playerColor);
+                        })
+                    })
                 </script>
             </div>
             <div class="padding">
@@ -95,7 +118,7 @@
                     // Add click event listener to the button
                     startGameButton.addEventListener('click', () => {
                         // Redirect the user to the specified URL when the button is clicked
-                        window.location.href = './game.html?dimension=' + dimension + '&gameType=' + gameType;
+                        window.location.href = './game.html?dimension=' + dimension + '&gameType=' + gameType + '&playerColor=' + playerColor;
                     });
                 </script>
             </div>

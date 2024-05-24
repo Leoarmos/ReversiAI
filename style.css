@@ -104,3 +104,21 @@ label.active {
 select:disabled {
     cursor: not-allowed;
 }
+
+img.player-color {
+    width: 30px;
+    height: auto;
+    padding: 0.5em;
+    border: 2px solid #004b23;
+}
+
+img.selected {
+    border: 2px solid #006400;
+}
+
+div#player-images {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
