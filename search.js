@@ -94,14 +94,13 @@ function mobilityHeuristic(state) {
 
 function safePawnsHeuristic(state) {
     let safeWeight = 1;
-    let semisafeWeight = 0;
     let unsafeWeight = -1;
     // object that contains n° of safe, semi-safe and unsafe pawns
     let blackPawnsStats = getPawnsStats(state, "b");
     let whitePawnsStats = getPawnsStats(state, "w");
 
-    let blackSafety = safeWeight * blackPawnsStats.safePawns + semisafeWeight * blackPawnsStats.semisafePawns + unsafeWeight * blackPawnsStats.unsafePawns;
-    let whiteSafety = safeWeight * whitePawnsStats.safePawns + semisafeWeight * whitePawnsStats.semisafePawns + unsafeWeight * whitePawnsStats.unsafePawns;
+    let blackSafety = safeWeight * blackPawnsStats.safePawns + unsafeWeight * blackPawnsStats.unsafePawns;
+    let whiteSafety = safeWeight * whitePawnsStats.safePawns + unsafeWeight * whitePawnsStats.unsafePawns;
 
     if (blackSafety + whiteSafety == 0) return 0;
     return 100 * (blackSafety - whiteSafety) / (blackSafety + whiteSafety);
@@ -136,19 +135,19 @@ function weightedHeuristic(state) {
     weight = 0.4;
     result += weight * morePawnsHeuristic(state);
 
-    weight = 0.1;
+    weight = 0.3;
     result += weight * eatingHeuristic(state);
 
-    weight = 0.6;
+    weight = 0.8;
     result += weight * conquestBorderHeuristic(state);
 
-    weight = 3;
+    weight = 4;
     result += weight * conquestCornerHeuristic(state);
 
     weight = 1;
     result += weight * skipOpponentTurnHeuristic(state);
 
-    weight = 1;
+    weight = 1.2;
     result += weight * mobilityHeuristic(state);
 
     weight = 1.5;

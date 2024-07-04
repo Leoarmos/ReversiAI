@@ -6,7 +6,7 @@ let gameState = {
 let blackHeuristic = null;
 let whiteHeuristic = null;
 
-const MAX_DEPTH = 10;
+const MAX_DEPTH = 15;
 const MAX_ALLOWED_SECONDS = 3;
 
 // Put a "p" where there is a possible move in the gameboard of the state parameter
@@ -79,7 +79,11 @@ function showWinner() {
         }
     }
 
-    document.getElementById("message").innerHTML = "The winner is " + (countB > countW ? "Black" : "White") + " – Bl: " + countB + " Wh: " + countW;
+    if (countB == countW) {
+        document.getElementById("message").innerHTML = "Draw!";
+    } else {
+        document.getElementById("message").innerHTML = "The winner is " + (countB > countW ? "Black" : "White") + " – Bl: " + countB + " Wh: " + countW;
+    }
 }
 
 // Reset everything for a new game to start
